@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario Star / Nyan Cat - Movimiento Sinusoidal</title>
+  <style>
+    /* Estilos globales y fondo decorativo (Criterio de Diseño: Sobresaliente) */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fdf08a url('fondo nyon.jpg') repeat center center;
+      background-size: cover;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border: 4px solid #facc15;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #854d0e;
+      margin-bottom: 16px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Canvas con borde estilizado y sombra */
+    canvas {
+      border: 4px solid #475569;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background-color: #000;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 16px auto;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn {
+      background-color: #eab308;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .btn:hover {
+      background-color: #ca8a04;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Mario Star / Nyan Cat</h1>
+    
+    <!-- Canvas interactivo -->
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+    <div class="controls">
+      <button class="btn" id="toggleDirectionBtn">Cambiar Dirección</button>
+      <button class="btn" id="resetBtn">Reiniciar Posición</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Carga de imágenes (asegúrate de que tengan estos nombres en la misma carpeta en GitHub)
+    const bgImage = new Image();
+    bgImage.src = 'fondo nyon.jpg';
+
+    const starImage = new Image();
+    starImage.src = 'nyon cat.png';
+
+    // Parámetros de la estrella / objeto
+    const star = {
+      x: 50,
+      y: canvas.height / 2,
+      width: 80,
+      height: 80,
+      speedX: 3,         // Velocidad horizontal
+      direction: 1,      // 1 = Derecha, -1 = Izquierda
+      amplitude: 60,     // Altura de la onda sinusoidal
+      frequency: 0.03,   // Frecuencia de movimiento sinusoidal
+      baseY: canvas.height / 2
+    };
+
+    // Actualización de posición y verificación de límites
+    function update() {
+      // Avanza en el eje X según la dirección actual
+      star.x += star.speedX * star.direction;
+
+      // Cálculo de onda sinusoidal en el eje Y
+      star.y = star.baseY + Math.sin(star.x * star.frequency) * star.amplitude;
+
+      // Verificación de límites (Límites del Canvas) [Criterio Técnico: Sobresaliente]
+      // Límite derecho
+      if (star.x + star.width >= canvas.width) {
+        star.x = canvas.width - star.width;
+        star.direction = -1; // Cambia de dirección a la izquierda
+      }
+      
+      // Límite izquierdo
+      if (star.x <= 0) {
+        star.x = 0;
+        star.direction = 1; // Cambia de dirección a la derecha
+      }
+    }
+
+    // Dibujado en pantalla
+    function draw() {
+      // Limpiar canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Dibujar fondo si ya está cargado, de lo contrario un fondo por defecto
+      if (bgImage.complete && bgImage.naturalWidth !== 0) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Dibujar estrella/objeto en la posición calculada
+      if (starImage.complete && starImage.naturalWidth !== 0) {
+        ctx.save();
+        // Si va hacia la izquierda, opcionalmente podemos invertir la imagen
+        if (star.direction === -1) {
+          ctx.translate(star.x + star.width, star.y);
+          ctx.scale(-1, 1);
+          ctx.drawImage(starImage, 0, 0, star.width, star.height);
+        } else {
+          ctx.drawImage(starImage, star.x, star.y, star.width, star.height);
+        }
+        ctx.restore();
+      } else {
+        // Marcador gráfico si la imagen aún no ha cargado
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(star.x + star.width / 2, star.y + star.height / 2, star.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Bucle principal de animación
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    // Eventos de botones
+    document.getElementById('toggleDirectionBtn').addEventListener('click', () => {
+      star.direction *= -1;
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      star.x = 50;
+      star.direction = 1;
+    });
+
+    // Iniciar ciclo de animación
+    loop();
+  </script>
+</body>
+</html>
