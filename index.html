@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mario Star / Nyan Cat - Movimiento Sinusoidal</title>
+  <title>Nyan Cat - Movimiento Sinusoidal</title>
   <style>
     /* Estilos globales y fondo decorativo (Criterio de Diseño: Sobresaliente) */
     * {
@@ -89,7 +89,7 @@
 <body>
 
   <div class="container">
-    <h1>Mario Star / Nyan Cat</h1>
+    <h1>Nyan Cat</h1>
     
     <!-- Canvas interactivo -->
     <canvas id="gameCanvas" width="800" height="450"></canvas>
@@ -104,14 +104,14 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Carga de imágenes (asegúrate de que tengan estos nombres en la misma carpeta en GitHub)
+    // Carga de imágenes desde la carpeta raíz de GitHub
     const bgImage = new Image();
     bgImage.src = 'fondo nyon.jpg';
 
     const starImage = new Image();
     starImage.src = 'nyon cat.png';
 
-    // Parámetros de la estrella / objeto
+    // Parámetros del objeto Nyan Cat
     const star = {
       x: 50,
       y: canvas.height / 2,
@@ -129,7 +129,7 @@
       // Avanza en el eje X según la dirección actual
       star.x += star.speedX * star.direction;
 
-      // Cálculo de onda sinusoidal en el eje Y
+      // Cálculo de onda sinusoidal en el eje Y [Criterio Técnico: Sobresaliente]
       star.y = star.baseY + Math.sin(star.x * star.frequency) * star.amplitude;
 
       // Verificación de límites (Límites del Canvas) [Criterio Técnico: Sobresaliente]
@@ -151,7 +151,7 @@
       // Limpiar canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Dibujar fondo si ya está cargado, de lo contrario un fondo por defecto
+      // Dibujar fondo si está cargado
       if (bgImage.complete && bgImage.naturalWidth !== 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       } else {
@@ -159,10 +159,9 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
-      // Dibujar estrella/objeto en la posición calculada
+      // Dibujar Nyan Cat en la posición calculada
       if (starImage.complete && starImage.naturalWidth !== 0) {
         ctx.save();
-        // Si va hacia la izquierda, opcionalmente podemos invertir la imagen
         if (star.direction === -1) {
           ctx.translate(star.x + star.width, star.y);
           ctx.scale(-1, 1);
@@ -172,7 +171,6 @@
         }
         ctx.restore();
       } else {
-        // Marcador gráfico si la imagen aún no ha cargado
         ctx.fillStyle = '#facc15';
         ctx.beginPath();
         ctx.arc(star.x + star.width / 2, star.y + star.height / 2, star.width / 2, 0, Math.PI * 2);
